@@ -4,13 +4,12 @@ You awaken on floor.
 == medbay ==
     + Go to Navigation. -> mednavhall
 
-
 == mednavhall ==
-    + {Proceed|Return} to Navigation -> navigation
-    
+    + {navigation} [Return to Medbay.] -> medbay
+    + [{Proceed | Return} to Navigation.] -> navigation
 
 == navigation ==
-    + Go to Medbay. -> 
+    + Go to Medbay. -> mednavhall
     
     
 - They lived happily ever after.
