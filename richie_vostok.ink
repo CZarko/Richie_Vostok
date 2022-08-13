@@ -1,7 +1,9 @@
+VAR oxygenRemaining = 72
 You awaken on floor.
 -> medbay
 
 == medbay ==
+    -> updateoxygen ->
     + Go to Navigation. -> mednavhall
 
 == mednavhall ==
@@ -33,6 +35,9 @@ You awaken on floor.
     
 == armEngHall ==
     + Go to the Armory. -> armory
+
+== engNavHall ==
+    -> END
     
 == armory ==
     + Go to Engine. -> armEngHall
@@ -43,6 +48,10 @@ You awaken on floor.
 == sleepingQuarters ==
     + Go to Engine. -> sqEngHall
     
+== updateoxygen ==
+    ~ oxygenRemaining -= 1
+    You have {oxygenRemaining} hours of oxygen left.
+->->
     
 - They lived happily ever after.
     -> END
