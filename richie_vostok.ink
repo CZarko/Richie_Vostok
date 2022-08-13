@@ -1,7 +1,17 @@
-Once upon a time...
+You awaken on floor.
+-> medbay
 
- * There were two choices.
- * There were four lines of content.
+== medbay ==
+    + Go to Navigation. -> mednavhall
 
+
+== mednavhall ==
+    + {Proceed|Return} to Navigation -> navigation
+    
+
+== navigation ==
+    + Go to Medbay. -> 
+    
+    
 - They lived happily ever after.
     -> END
