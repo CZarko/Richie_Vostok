@@ -1,11 +1,16 @@
-VAR oxygenRemaining = 72
+CONST MAX_OXYGEN = 72
+VAR oxygenRemaining = MAX_OXYGEN
+~oxygenRemaining++
 Insert introduction...
 -> main
 
 == main ==
     {EnvironmentDescription()}
-    <- move(-> main)
+    <- action(-> main)
     -> updateoxygen ->
+    {oxygenRemaining: 
+        - 0: -> oxygen_deprivation_end
+    }
 -> DONE
 
 LIST locations = hallway, medbay, navigation, oxygen, bridge, engine, armory, quarters
@@ -81,6 +86,10 @@ VAR accessible = (navigation)
         }
 - -> ret
 
+== action(-> ret) ==
+    + [Investigate elsewhere.] -> move(-> main)
+- -> ret
+
 == function EnvironmentDescription() ==
     {cur_loc:
         - hallway:
@@ -107,3 +116,18 @@ VAR accessible = (navigation)
     ~ oxygenRemaining -= 1
     You have {oxygenRemaining} hours of oxygen left.
 ->->
+
+== oxygen_deprivation_end ==
+    The blaring alarm grows ever fainter, and the audio messages have reached a point of complete illegibility. An intrusive thought interjects...
+    "I'm tired..."
+    The light of the room is suddenly beginning to fade. The details of the surroundings more difficult to make out. 
+    "Where is this?"
+    "What was... I... doing?"
+    
+    Your last moments of feeling give you the vague notion you have fallen, but everything is so dark and you are so tired... what does it matter anyway?
+- -> game_over
+    
+
+== game_over ==
+    With that your journey has come to a horrible end.
+- -> END
