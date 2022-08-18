@@ -85,16 +85,128 @@ VAR accessible = (navigation)
                 ~ cur_loc = hallway
         }
 - -> ret
+/*
+== med_nav_hallway_actions(-> ret) ==
+    * [Unique one-time medbay/navigation hallway action.] Not yet implemented.
+    + [Unique repeatable medbay/navigation hallway action.] Not yet implemented.
+- -> ret
+
+== nav_oxy_hallway_actions(-> ret) ==
+    * [Unique one-time navigation/oxygen hallway action.] Not yet implemented.
+    + [Unique repeatable navigation/oxygen hallway action.] Not yet implemented.
+- -> ret
+
+== nav_bri_hallway_actions(-> ret) ==
+    * [Unique one-time navigation/bridge hallway action.] Not yet implemented.
+    + [Unique repeatable navigation/bridge hallway action.] Not yet implemented.
+- -> ret
+
+== nav_eng_hallway_actions(-> ret) ==
+    * [Unique one-time navigation/engine hallway action.] Not yet implemented.
+    + [Unique repeatable navigation/engine hallway action.] Not yet implemented.
+- -> ret
+
+== eng_arm_hallway_actions(-> ret) ==
+    * [Unique one-time engine/armory hallway action.] Not yet implemented.
+    + [Unique repeatable engine/armory hallway action.] Not yet implemented.
+- -> ret
+
+== eng_qua_hallway_actions(-> ret) ==
+    * [Unique one-time engine/quarters hallway action.] Not yet implemented.
+    + [Unique repeatable engine/quarters hallway action.] Not yet implemented.
+- -> ret
+
+== hallway_actions(-> ret) ==
+    {accessible:
+        - (medbay, navigation):
+            <- med_nav_hallway_actions(ret)
+        - (navigation, oxygen):
+            <- nav_oxy_hallway_actions(ret)
+        - (navigation, bridge):
+            <- nav_bri_hallway_actions(ret)
+        - (navigation, engine):
+            <- nav_eng_hallway_actions(ret)
+        - (engine, armory):
+            <- eng_arm_hallway_actions(ret)
+        - (engine, quarters):
+            <- eng_qua_hallway_actions(ret)
+    }
+- -> ret
+*/
+== medbay_actions(-> ret) ==
+    * [Unique one-time medbay action.] Not yet implemented. 
+    + [Unique repeatable medbay action.] Not yet implemented. 
+- -> ret
+
+== navigation_actions(-> ret) ==
+    * [Unique one-time navigation action.] Not yet implemented. 
+    + [Unique repeatable navigation action.] Not yet implemented. 
+- -> ret
+
+== oxygen_actions(-> ret) ==
+    * [Unique one-time oxygen action.] Not yet implemented. 
+    + [Unique repeatable oxygen action.] Not yet implemented. 
+- -> ret
+
+== bridge_actions(-> ret) ==
+    * [Unique one-time bridge action.] Not yet implemented. 
+    + [Unique repeatable bridge action.] Not yet implemented. 
+- -> ret
+
+== engine_actions(-> ret) ==
+    * [Unique one-time engine action.] Not yet implemented. 
+    + [Unique repeatable engine action.] Not yet implemented. 
+- -> ret
+
+== armory_actions(-> ret) ==
+    * [Unique one-time armory action.] Not yet implemented. 
+    + [Unique repeatable armory action.] Not yet implemented. 
+- -> ret
+
+== quarter_actions(-> ret) ==
+    * [Unique one-time quarter action.] Not yet implemented. 
+    + [Unique repeatable quarter action.] Not yet implemented. 
+- -> ret
 
 == action(-> ret) ==
-    + [Investigate elsewhere.] -> move(-> main)
+    {cur_loc:
+        /*- hallway:
+            <- hallway_actions(ret)*/
+        - medbay:
+            <- medbay_actions(ret)
+        - navigation:
+            <- navigation_actions(ret)
+        - oxygen:
+            <- oxygen_actions(ret)
+        - bridge:
+            <- bridge_actions(ret)
+        - engine:
+            <- engine_actions(ret)
+        - armory:
+            <- armory_actions(ret)
+        - quarters:
+            <- quarter_actions(ret)
+    }
+    + [Investigate elsewhere.] -> move(ret)
 - -> ret
 
 == function EnvironmentDescription() ==
     {cur_loc:
         - hallway:
-            # COMPLICATED DEPENDENT ON WHAT IS ACCESSIBLE FROM GIVEN HALLWAY
-            Insert description of hallway...
+            {accessible:
+                - (medbay, navigation):
+                    Insert description of medbay/navigation hallway...
+                - (navigation, oxygen):
+                    Insert description of navigation/oxygen hallway... 
+                - (navigation, bridge):
+                    Insert description of navigation/bridge hallway... 
+                - (navigation, engine):
+                    Insert description of navigation/engine hallway... 
+                - (engine, armory):
+                    Insert description of engine/armory hallway... 
+                - (engine, quarters):
+                    Insert description of navigation/quarters hallway... 
+            }
         - medbay:
             Insert description of medbay...
         - navigation:
