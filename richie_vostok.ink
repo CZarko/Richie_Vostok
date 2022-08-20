@@ -208,19 +208,19 @@ VAR accessible = (navigation)
                     Insert description of navigation/quarters hallway... 
             }
         - medbay:
-            Insert description of medbay...
+            A hard bed and very sterile environment? The medical bay of course... but why is there some blood over there?
         - navigation:
-            Insert description of navigation...
+            A holographic map with a platform overlooking it? Ah, this must be the navigation room.
         - oxygen:
-            Insert description of oxygen...
+            Tanks and fauna? No question, the oxygen room. Looks like they were experimenting with recycling air. What is that hissing sound?
         - bridge:
-            Insert description of bridge...
+            Rotating chairs pointed at LCD screens with numbers on them and... WOW! Look at that! Space! That is gorgeous! This has to be the bridge room.
         - engine:
-            Insert description of engine...
+            Wow, it's loud in here. Valves relieving pressure and a loud hum? Definitely the engine room.
         - armory:
-            Insert description of armory...
+            Guns, body armor, and other weaponry? The armory room for if we ever run into pirates.
         - quarters:
-            Insert description of quarters...
+            Bunk beds and desks? Must be the sleeping quarters.
     }
 
 
