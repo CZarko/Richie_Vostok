@@ -8,11 +8,12 @@ Insert introduction...
 == main ==
     {EnvironmentDescription()}
     <- action(-> main)
-    -> updateoxygen ->
+    -> update_oxygen_and_hallucination ->
     {oxygenRemaining: 
         - 0: -> oxygen_deprivation_end
     }
 -> DONE
+
 
 //
 // Movement System
@@ -21,12 +22,15 @@ Insert introduction...
 LIST locations = hallway, medbay, navigation, oxygen, bridge, engine, armory, quarters
 VAR cur_loc = medbay
 VAR accessible = (navigation)
+VAR accessed = (medbay)
 
 == function CanMove(loc) ==
     ~ return accessible ? loc && cur_loc != loc
 
-// TODO: FIX GO | PROCEED | RETURN
 == move(-> ret) ==
+    {accessed !? cur_loc: 
+        ~ accessed += cur_loc
+    }
     + {CanMove(medbay)} [Return to Medbay.]
         {cur_loc:
             - hallway:
@@ -36,7 +40,7 @@ VAR accessible = (navigation)
                 ~ accessible = cur_loc + medbay
                 ~ cur_loc = hallway
         }
-    + {CanMove(navigation)} [{Go|Proceed|Return} to Navigation.]
+    + {CanMove(navigation)} [{accessed !? navigation: Go | Return} to Navigation.]
         {cur_loc:
             - hallway:
                 ~ accessible = (medbay, oxygen, engine, bridge)
@@ -45,7 +49,7 @@ VAR accessible = (navigation)
                 ~ accessible = cur_loc + navigation
                 ~ cur_loc = hallway
         }
-    + {CanMove(oxygen)} [{Go|Proceed|Return} to Oxygen.]
+    + {CanMove(oxygen)} [{accessed !? oxygen: Go | Return} to Oxygen.]
         {cur_loc:
             - hallway:
                 ~ accessible = (navigation)
@@ -54,7 +58,7 @@ VAR accessible = (navigation)
                 ~ accessible = cur_loc + oxygen
                 ~ cur_loc = hallway
         }
-    + {CanMove(bridge)} [{Go|Proceed|Return} to Bridge.]
+    + {CanMove(bridge)} [{accessed !? bridge: Go | Return} to Bridge.]
         {cur_loc:
             - hallway:
                 ~ accessible = (navigation)
@@ -63,7 +67,7 @@ VAR accessible = (navigation)
                 ~ accessible = cur_loc + bridge
                 ~ cur_loc = hallway
         }
-    + {CanMove(engine)} [{Go|Proceed|Return} to Engine.]
+    + {CanMove(engine)} [{accessed !? engine: Go | Return} to Engine.]
         {cur_loc:
             - hallway:
                 ~ accessible = (navigation, armory, quarters)
@@ -72,7 +76,7 @@ VAR accessible = (navigation)
                 ~ accessible = cur_loc + engine
                 ~ cur_loc = hallway
         }
-    + {CanMove(armory)} [{Go|Proceed|Return} to Armory.]
+    + {CanMove(armory)} [{accessed !? armory: Go | Return} to Armory.]
         {cur_loc:
             - hallway:
                 ~ accessible = (engine)
@@ -81,7 +85,7 @@ VAR accessible = (navigation)
                 ~ accessible = cur_loc + armory
                 ~ cur_loc = hallway
         }
-    + {CanMove(quarters)} [{Go|Proceed|Return} to Sleeping Quarters.]
+    + {CanMove(quarters)} [{accessed !? quarters: Go | Return} to Sleeping Quarters.]
         {cur_loc:
             - hallway:
                 ~ accessible = (engine)
@@ -185,23 +189,6 @@ VAR Inventory = (notebook, tmp) // the detective's inventory initially begins wi
     + [Unique repeatable engine/quarters hallway action.] Not yet implemented.
 - -> ret
 
-== hallway_actions(-> ret) ==
-    {accessible:
-        - (medbay, navigation):
-            <- med_nav_hallway_actions(ret)
-        - (navigation, oxygen):
-            <- nav_oxy_hallway_actions(ret)
-        - (navigation, bridge):
-            <- nav_bri_hallway_actions(ret)
-        - (navigation, engine):
-            <- nav_eng_hallway_actions(ret)
-        - (engine, armory):
-            <- eng_arm_hallway_actions(ret)
-        - (engine, quarters):
-            <- eng_qua_hallway_actions(ret)
-    }
-- -> ret
-
 == medbay_actions(-> ret) ==
     * [Unique one-time medbay action.] Not yet implemented. 
     + [Unique repeatable medbay action.] Not yet implemented. 
@@ -240,7 +227,6 @@ VAR Inventory = (notebook, tmp) // the detective's inventory initially begins wi
 == action(-> ret) ==
     {cur_loc:
         - hallway:
-           //<- hallway_actions(ret)
            {accessible:
                 - (medbay, navigation):
                     <- med_nav_hallway_actions(ret)
@@ -312,10 +298,20 @@ VAR Inventory = (notebook, tmp) // the detective's inventory initially begins wi
 // Oxygen/Hallucination System
 //
 
-== updateoxygen ==
+VAR hallucination = 0
+
+== update_oxygen_and_hallucination ==
     ~ oxygenRemaining -= 1
     You have {oxygenRemaining} hours of oxygen left.
+    
+    ~ hallucination = 3 - FLOOR((oxygenRemaining*4)/MAX_OXYGEN)
+    You have {hallucination} hallucination. // TODO: comment out later
 ->->
+
+
+//
+// Game Over Events
+//
 
 == oxygen_deprivation_end ==
     The blaring alarm grows ever fainter, and the audio messages have reached a point of complete illegibility. An intrusive thought interjects...
