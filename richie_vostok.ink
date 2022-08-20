@@ -1,6 +1,7 @@
+//https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#multiline-blocks
 CONST MAX_OXYGEN = 72
 VAR oxygenRemaining = MAX_OXYGEN
-~oxygenRemaining++
+~ oxygenRemaining++
 Insert introduction...
 -> main
 
@@ -13,6 +14,10 @@ Insert introduction...
     }
 -> DONE
 
+//
+// Movement System
+//
+
 LIST locations = hallway, medbay, navigation, oxygen, bridge, engine, armory, quarters
 VAR cur_loc = medbay
 VAR accessible = (navigation)
@@ -20,6 +25,7 @@ VAR accessible = (navigation)
 == function CanMove(loc) ==
     ~ return accessible ? loc && cur_loc != loc
 
+// TODO: FIX GO | PROCEED | RETURN
 == move(-> ret) ==
     + {CanMove(medbay)} [Return to Medbay.]
         {cur_loc:
@@ -85,6 +91,70 @@ VAR accessible = (navigation)
                 ~ cur_loc = hallway
         }
 - -> ret
+
+
+//
+// Inventory System
+//
+
+LIST Props = notebook, helium_tank, oxygen_tank, tmp // a list of all items littered throughout the spacecraft
+VAR Inventory = (notebook, tmp) // the detective's inventory initially begins with only his trusty notebook
+
+// Adds prop from Props LIST to Inventory
+== pick_up(prop, -> ret) ==
+    ~ Inventory += prop
+- -> ret
+
+// Removes prop from Props LIST from Inventory
+== use(prop, -> ret) ==
+    ~ Inventory -= prop
+- -> ret
+
+// Prints a description of prop based on its name
+== inspect(prop) ==
+    {prop:
+        - notebook:
+            A notebook. This detective's best friend.
+        - helium_tank:
+            A gas canister full of Helium... Helium... second on the Periodic Table... if I recall...
+        - else:
+            Uh oh. One of the Developers of this game, has made a mistake and either not removed this temporary prop or forgotten to code a description for it.
+    }
+- ->->
+
+// Creates button for inspectuous
+== inspect_option(inv, -> ret)
+    + [The {LIST_MIN(inv)}.] -> inspect(LIST_MIN(inv)) -> main
+- -> ret
+
+// Creates a menu with a button for every prop in the player's current Inventory
+// On selection of such a button, the inspect knot is ran for that given prop
+== inspectuous(inv, -> ret) ==
+    <- inspect_option(inv, -> inspectuous)
+    {LIST_COUNT(inv) != 1: <- inspectuous(inv - LIST_MIN(inv), ret)}
+    {LIST_COUNT(inv) != 1: -> DONE}
+    + [Nevermind.] -> main
+- -> ret
+
+// Recursively prints each prop in the player's current Inventory
+== function PrintInventory(inv) ==
+    A {LIST_MIN(inv)}.
+    {LIST_COUNT(inv) != 1:{PrintInventory(inv - LIST_MIN(inv))}}
+
+// The action thread for reviewing the player's current Inventory
+== check(-> ret) ==
+    I decided now would be a good time to review all of the pieces to this puzzle I had found thus far...
+    {PrintInventory(Inventory)}
+    I debated inspecting an item further...
+    + [Inspect it.] -> inspectuous(Inventory, ret)
+    + [Maybe later...]
+- -> ret
+
+
+//
+// Room Based Actions
+//
+
 /*
 == med_nav_hallway_actions(-> ret) ==
     * [Unique one-time medbay/navigation hallway action.] Not yet implemented.
@@ -188,6 +258,7 @@ VAR accessible = (navigation)
             <- quarter_actions(ret)
     }
     + [Investigate elsewhere.] -> move(ret)
+    + [Check inventory.] -> check(ret)
 - -> ret
 
 == function EnvironmentDescription() ==
