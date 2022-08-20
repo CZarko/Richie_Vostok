@@ -1,7 +1,4 @@
 //https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#multiline-blocks
-CONST MAX_OXYGEN = 72
-VAR oxygenRemaining = MAX_OXYGEN
-~ oxygenRemaining++
 Insert introduction...
 -> main
 
@@ -298,6 +295,9 @@ VAR Inventory = (notebook, tmp) // the detective's inventory initially begins wi
 // Oxygen/Hallucination System
 //
 
+CONST MAX_OXYGEN = 72
+VAR oxygenRemaining = MAX_OXYGEN
+~ oxygenRemaining++
 VAR hallucination = 0
 
 == update_oxygen_and_hallucination ==
