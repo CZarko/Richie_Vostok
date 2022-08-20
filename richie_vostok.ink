@@ -155,7 +155,6 @@ VAR Inventory = (notebook, tmp) // the detective's inventory initially begins wi
 // Room Based Actions
 //
 
-/*
 == med_nav_hallway_actions(-> ret) ==
     * [Unique one-time medbay/navigation hallway action.] Not yet implemented.
     + [Unique repeatable medbay/navigation hallway action.] Not yet implemented.
@@ -202,7 +201,7 @@ VAR Inventory = (notebook, tmp) // the detective's inventory initially begins wi
             <- eng_qua_hallway_actions(ret)
     }
 - -> ret
-*/
+
 == medbay_actions(-> ret) ==
     * [Unique one-time medbay action.] Not yet implemented. 
     + [Unique repeatable medbay action.] Not yet implemented. 
@@ -240,8 +239,22 @@ VAR Inventory = (notebook, tmp) // the detective's inventory initially begins wi
 
 == action(-> ret) ==
     {cur_loc:
-        /*- hallway:
-            <- hallway_actions(ret)*/
+        - hallway:
+           //<- hallway_actions(ret)
+           {accessible:
+                - (medbay, navigation):
+                    <- med_nav_hallway_actions(ret)
+                - (navigation, oxygen):
+                    <- nav_oxy_hallway_actions(ret)
+                - (navigation, bridge):
+                    <- nav_bri_hallway_actions(ret)
+                - (navigation, engine):
+                    <- nav_eng_hallway_actions(ret)
+                - (engine, armory):
+                    <- eng_arm_hallway_actions(ret)
+                - (engine, quarters):
+                    <- eng_qua_hallway_actions(ret)
+            }
         - medbay:
             <- medbay_actions(ret)
         - navigation:
@@ -294,6 +307,10 @@ VAR Inventory = (notebook, tmp) // the detective's inventory initially begins wi
             Bunk beds and desks? Must be the sleeping quarters.
     }
 
+
+//
+// Oxygen/Hallucination System
+//
 
 == updateoxygen ==
     ~ oxygenRemaining -= 1
