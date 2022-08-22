@@ -1,5 +1,9 @@
 //https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#multiline-blocks
-Insert introduction...
+CONST MAX_OXYGEN = 72
+VAR oxygenRemaining = MAX_OXYGEN
+~ oxygenRemaining++
+VAR hallucination = 0
+Drowsily and groaning, I push myself away from the chilled, steel floor. A remnant of drool and cryostasis fluid the only evidence of my presense remaining. Unsettled I glance around the room I find myself in. I do not recognize it.
 -> main
 
 == main ==
@@ -197,8 +201,17 @@ VAR Inventory = (notebook, tmp) // the detective's inventory initially begins wi
 - -> ret
 
 == oxygen_actions(-> ret) ==
-    * [Unique one-time oxygen action.] Not yet implemented. 
-    + [Unique repeatable oxygen action.] Not yet implemented. 
+    * [Inspect the Oxygen Tanks.] 
+        Taking a closer look at the oxygen tanks, I can't help but worry... With this little air left, what if I don't make it... what if...
+        No, now is not the time to think like that. Furthermore, on closer inspection there appears to be a portable oxygen canister jammed in between the piping mess. This could be useful.
+        [Picked Up ~ Oxygen Tank]
+        -> pick_up(oxygen_tank, -> main)
+    * [Inspect the Filtration System.] 
+        As expected, on approaching the filtration system the hissing becomes increasingly excrutiating to my ears. Near unbearable frankly, but now's not that time for excuses...
+        On further inspection of the damaged system, it becomes clear that the damage is worse than it looks. The system is no longer capable of filtration... It's barely capable of pumping air throughout the vessel, and who knows how long that will last...
+        Worst of all, it's unrepairable.
+    + -> 
+        There's nothing left for me to do here.
 - -> ret
 
 == bridge_actions(-> ret) ==
@@ -217,8 +230,11 @@ VAR Inventory = (notebook, tmp) // the detective's inventory initially begins wi
 - -> ret
 
 == quarter_actions(-> ret) ==
-    * [Unique one-time quarter action.] Not yet implemented. 
-    + [Unique repeatable quarter action.] Not yet implemented. 
+    + [Inspect the Blood.]
+        Even with a closer look, it is impossible to procure whether it was from a struggle or a mere workplace mishap from this amount of blood.
+        Yet, it remains unsettling.
+    * [Inspect the Crew's Chests.] 
+        Not yet implemented. 
 - -> ret
 
 == action(-> ret) ==
@@ -257,6 +273,8 @@ VAR Inventory = (notebook, tmp) // the detective's inventory initially begins wi
     + [Check inventory.] -> check(ret)
 - -> ret
 
+// Depending on the current location and hallucination level of the player
+// A description will be printed of the local environment
 == function EnvironmentDescription() ==
     {cur_loc:
         - hallway:
@@ -275,19 +293,93 @@ VAR Inventory = (notebook, tmp) // the detective's inventory initially begins wi
                     Insert description of navigation/quarters hallway... 
             }
         - medbay:
-            A hard bed and very sterile environment? The medical bay of course... but why is there some blood over there?
+            {hallucination:
+                - 3:
+                    Things are bad.
+                - 2:
+                    Things are worse.
+                - 1:
+                    Things aren't what they were.
+                - else:
+                    The medbay I find myself in is fairly small and clearly intended to only hold one or two people at max capacity, excluding the space occupied by the now completely empty crew cryo-sleep, but it appears to have been filled to the brim with extra beds. All of which appear to have been both used and vacated in a hurry. 
+                    There isn’t any overly complex equipment that can be seen, just the bare minimum required for a ship of this class. There are a couple of basic medkits, some of which have been used, and a couple empty vials of a basic cure-all medicine that is fairly standard to have on vessels going through deep space. It appears the last of which was pumped into the cryotube I most recently emerged from.
+                    There is a chart stuck to the tube that might have some details about me and this situation, medically speaking at least. There is also a door that appears to lead to what is dubbed “Navigation.”
+            }
         - navigation:
-            A holographic map with a platform overlooking it? Ah, this must be the navigation room.
+            {hallucination:
+                - 3:
+                    Things are bad.
+                - 2:
+                    Things are worse.
+                - 1:
+                    Things aren't what they were.
+                - else:
+                    Slipping into the room, a choppy holographic projection catches my eye. It seems to be being emitted from some small device central to the room. Its poor quality makes it particularly difficult to garner any specific details, but it seems to be a map of the ship.
+                    Had I been a crew member, I suppose that lack of details would be much less perturbing, considering any and all crew members should be more than familiar with all the facilities aboard. At least, it's enough to gather a sense of the ship's layout, of which I appear to be in the center of.
+                    On all four sides of the room are doors, each leading to another major section of the ship. Deducing from the map, it would appear these doors lead to the Medical Bay, the Engines, the Oxygen Supply, and the Bridge, the last of which's door occasionally glows disturbingly red along the edges.
+            }
         - oxygen:
-            Tanks and fauna? No question, the oxygen room. Looks like they were experimenting with recycling air. What is that hissing sound?
+            {hallucination:
+                - 3:
+                    Things are bad.
+                - 2:
+                    Things are worse.
+                - 1:
+                    Things aren't what they were.
+                - else:
+                    {Entering the room, an all encompassing hissing greets me.|} 
+                    The room is budging beyond the brim with ginormous O2 tanks and piping. Horrifyingly, these components which should be teeming with oxygen, are all near depleted. This means one of two things, this ship has been pilgrimaging for much longer than would normally be anticipated, or somewhere there is... a leak.
+                    Despite the room's crowding a large filtration system is visible towards the back end of the room, which, among various other functions, is responsible for the distribution and recycling of air all across the ship. It appears to have been severly damaged. It must be the source of that hissing.
+            }
         - bridge:
-            Rotating chairs pointed at LCD screens with numbers on them and... WOW! Look at that! Space! That is gorgeous! This has to be the bridge room.
+            {hallucination:
+                - 3:
+                    Things are bad.
+                - 2:
+                    Things are worse.
+                - 1:
+                    Things aren't what they were.
+                - else:
+                    The bridge is mostly intact, although it has definitely seen better days. All the chairs that would normally be in front of their respective stations have been strewn across the room and various displays appear to have been shattered. Numerous tools and instruments are rolling across the floor amidst the various glass shards as the ship slowly continues its drifting through space. Fortunately, the main terminal seems to be relatively whole, excluding a dent or two, and functional, although it repeatedly basks the room in an ominous red. 
+                    {Perhaps this warrants some attention.|}
+            }
         - engine:
-            Wow, it's loud in here. Valves relieving pressure and a loud hum? Definitely the engine room.
+            {hallucination:
+                - 3:
+                    Things are bad.
+                - 2:
+                    Things are worse.
+                - 1:
+                    Things aren't what they were.
+                - else:
+                    The first word that comes to mind is hot. The engine is emitting an outrageously blistering heat making it hard to breathe what miniscule memories of air remain on the ship. 
+                    The engine is a fairly large contraption connected to the main thrusters at the back of the ship. There are numerous pipes and valves covering the outside of the engine directing fuel and exhaust where it needs to go. Looking at the walls, there appears to be many places where tools COULD be hung up in case repairs are necessary, but all are notably missing-in-action.
+                    Several of the valves that litter the room appear to have loosened, and several seem to be leaking various unknown fluids that evaporate almost as soon as they spill. That can't be good.
+            }
         - armory:
-            Guns, body armor, and other weaponry? The armory room for if we ever run into pirates.
+            {hallucination:
+                - 3:
+                    Things are bad.
+                - 2:
+                    Things are worse.
+                - 1:
+                    Things aren't what they were.
+                - else:
+                    It's standard for a ship to have some form of armory aboard in order for the crew to properly defend themselves. It's a big galaxy out there and unfortunately quite a few things in it would see humans as the perfect bite sized snack, even other humans... ugh...
+                    Lining each of the walls are various lockers filled with the typical standard weapons and armor for this class of ship; nothing too strong, nothing too weak. Most of the lockers appear to be locked up tight though and the few that are open are missing any remnant of equipment. Even more peculiar, of the benches almost all stationed neatly and symmetrically along the length of the room, one sits upturned, dragged to the center as if almost acting as some sort of barrier... but to what?
+            }
         - quarters:
-            Bunk beds and desks? Must be the sleeping quarters.
+            {hallucination:
+                - 3:
+                    Things are bad.
+                - 2:
+                    Things are worse.
+                - 1:
+                    Things aren't what they were.
+                - else:
+                    The sleeping quarters are a big communal space. Beds line the walls with small desks and personalized chest abreast to each one. The various containers, however, seem to have been emptied in great haste. Many small trinkets and litterings of dropped clothes scatter the floor. In their rush, the crew appear to have incidentally left many of their chests open. Perhaps something remains in them. Some food lays scattered upon some of the desktops but it has long since gone cold. It would seem to have been abandoned for at least a couple days.
+                    In the back of the room is a modicum of old dried blood on the corner of one of the desks.
+            }
     }
 
 
@@ -295,16 +387,15 @@ VAR Inventory = (notebook, tmp) // the detective's inventory initially begins wi
 // Oxygen/Hallucination System
 //
 
-CONST MAX_OXYGEN = 72
-VAR oxygenRemaining = MAX_OXYGEN
-~ oxygenRemaining++
-VAR hallucination = 0
-
 == update_oxygen_and_hallucination ==
     ~ oxygenRemaining -= 1
-    You have {oxygenRemaining} hours of oxygen left.
+    {A loud, urgent alarm voice shares, |}"You have {oxygenRemaining} hours of oxygen left."
+    {That sounds very bad.|}
     
     ~ hallucination = 3 - FLOOR((oxygenRemaining*4)/MAX_OXYGEN)
+    {hallucination < 0: 
+        ~ hallucination = 0
+    }
     You have {hallucination} hallucination. // TODO: comment out later
 ->->
 
