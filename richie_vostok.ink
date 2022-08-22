@@ -102,8 +102,8 @@ VAR accessed = (medbay)
 // Inventory System
 //
 
-LIST Props = notebook, helium_tank, oxygen_tank, tmp // a list of all items littered throughout the spacecraft
-VAR Inventory = (notebook, tmp) // the detective's inventory initially begins with only his trusty notebook
+LIST Props = notebook, charred_tank, dented_tank, valve, wrench, hammer, saw // a list of all items littered throughout the spacecraft
+VAR Inventory = (notebook) // the detective's inventory initially begins with only his trusty notebook
 
 // Adds prop from Props LIST to Inventory
 == pick_up(prop, -> ret) ==
@@ -119,12 +119,47 @@ VAR Inventory = (notebook, tmp) // the detective's inventory initially begins wi
 == inspect(prop) ==
     {prop:
         - notebook:
-            A notebook. This detective's best friend.
-        - helium_tank:
-            A gas canister full of Helium... Helium... second on the Periodic Table... if I recall...
+            {hallucination:
+                - 3:
+                    Jeremy seems to be all right.
+                - 2:
+                    The mass of paper and binding named Jeremy seems to be in a good condition.
+                - 1:
+                    A bundle of papers bound together that seem to be breathing...
+                - else:
+                    A notebook. This detective's best friend.
+            }
+            * [Discard it?] -> use(notebook, -> main)
+        - charred_tank:
+            {hallucination:
+                - 3:
+                    This wonderful glass of dark whiskey sure looks satisfying!
+                - 2:
+                    This glass of... liquid? It sure looks hydrating... I am quite parched...
+                - 1: 
+                    This tank of gas has a dark label, which is unusual, but it seems that it stores some oxide in it. Seeing as oxide is normally a sign of the gas being a compound, this seems puzzling, but labels don't lie.
+                - else:
+                    The gas tank seems in a fine condition, but the label is near impossible to read given the dark charring... Whatever gas is in it ends with oxide... and that's all that can be made out.
+            }
+            * [Use it?] -> read_the_label_end
+        - dented_tank:
+            {hallucination:
+                - 3:
+                    This wonderful glass of light whiskey sure looks satisfying!
+                - 2:
+                    This glass of... liquid? It sure looks hydrating... I am quite parched...
+                - 1: 
+                    This tank of gas is in a near pristine state, and the label reads "Maybe you should use me?" How odd...
+                - else:
+                    Although this gas tank is a tad dented, it seems to be in great shape. Even better, its label reads O2. Perhaps this will help.
+            }
+            * [Use it?]
+                ~ oxygenRemaining += 10
+                -> use(dented_tank, -> main)
         - else:
             Uh oh. One of the Developers of this game, has made a mistake and either not removed this temporary prop or forgotten to code a description for it.
     }
+    + [Save it for later.] I decided to hold onto it for the time being.
 - ->->
 
 // Creates button for inspectuous
@@ -203,15 +238,13 @@ VAR Inventory = (notebook, tmp) // the detective's inventory initially begins wi
 == oxygen_actions(-> ret) ==
     * [Inspect the Oxygen Tanks.] 
         Taking a closer look at the oxygen tanks, I can't help but worry... With this little air left, what if I don't make it... what if...
-        No, now is not the time to think like that. Furthermore, on closer inspection there appears to be a portable oxygen canister jammed in between the piping mess. This could be useful.
-        [Picked Up ~ Oxygen Tank]
-        -> pick_up(oxygen_tank, -> main)
+        No, now is not the time to think like that. Furthermore, on closer inspection there appears to be a portable canister of some sort jammed in between the piping mess. This could be useful.
+        [Picked Up ~ Dented Tank]
+        -> pick_up(dented_tank, -> main)
     * [Inspect the Filtration System.] 
         As expected, on approaching the filtration system the hissing becomes increasingly excrutiating to my ears. Near unbearable frankly, but now's not that time for excuses...
         On further inspection of the damaged system, it becomes clear that the damage is worse than it looks. The system is no longer capable of filtration... It's barely capable of pumping air throughout the vessel, and who knows how long that will last...
         Worst of all, it's unrepairable.
-    + -> 
-        There's nothing left for me to do here.
 - -> ret
 
 == bridge_actions(-> ret) ==
@@ -219,22 +252,46 @@ VAR Inventory = (notebook, tmp) // the detective's inventory initially begins wi
     + [Unique repeatable bridge action.] Not yet implemented. 
 - -> ret
 
+== engine_maintenance ==
+    Finally, with the valve I have been gain a glance into the engine itself. 
+    Absurdly hot, the engine seems to be working over time. Of the various pipes and components of the engine, one keeps rattling... and hissing?
+    * {Inventory ? wrench} [Tighten the bolts.] -> you_did_it_end
+    + [Leave it alone for now.] 
+- -> main
+
 == engine_actions(-> ret) ==
-    * [Unique one-time engine action.] Not yet implemented. 
-    + [Unique repeatable engine action.] Not yet implemented. 
+    * [Investigate the charred tank.] 
+        A charred gas tank, with the label almost completely covered with charring. It might be useful, so I decided to take it with me.
+        [Picked Up ~ Charred Tank]
+        -> pick_up(charred_tank, -> main)
+    * {Inventory ? valve} [Inspect the engine.] -> engine_maintenance
 - -> ret
 
 == armory_actions(-> ret) ==
     * [Unique one-time armory action.] Not yet implemented. 
-    + [Unique repeatable armory action.] Not yet implemented. 
+    * {Inventory ? valve} [Inspect the engine.] -> engine_maintenance 
 - -> ret
+
+== sneak_a_peak ==
+    There appear to be some objects forgotten here and there in the various chests, but one of them stands out as it contains various tools in it. A note on the front of this particular container reads as such...
+            "I'm keeping my tools here now, because CHARLIE keeps borrowing and losing them! As I'm not here to clean up after CHARLIE all the time, I've elected to store them somewhere he can't get them. Sincerely, the only engineer on board, David."
+    Peaking in I've seen that there is some wrenches, some hammers, and curiously a few saw?
+    * [Take a wrench.] 
+        [Picked Up ~ Wrench] 
+        -> pick_up(wrench, -> main)
+    * [Take a hammer.] 
+        [Picked Up ~ Hammer]
+        -> pick_up(hammer, -> main)
+    * [Take a saw.] 
+        [Picked Up ~ Saw]
+        -> pick_up(saw, -> main)
+- -> main
 
 == quarter_actions(-> ret) ==
     + [Inspect the Blood.]
         Even with a closer look, it is impossible to procure whether it was from a struggle or a mere workplace mishap from this amount of blood.
         Yet, it remains unsettling.
-    * [Inspect the Crew's Chests.] 
-        Not yet implemented. 
+    * [Inspect the Crew's Chests.] -> sneak_a_peak
 - -> ret
 
 == action(-> ret) ==
@@ -280,17 +337,72 @@ VAR Inventory = (notebook, tmp) // the detective's inventory initially begins wi
         - hallway:
             {accessible:
                 - (medbay, navigation):
-                    Insert description of medbay/navigation hallway...
+                    {hallucination:
+                        - 3:
+                            One door says medbay, and the other one says navigation. It’s awfully chilly in this hall, and that hissing sound is also pretty annoying.
+                        - 2:
+                            dur
+                        - 1:
+                            dur
+                        - else:
+                            This is the hallway between the medbay and the main navigation hub. The hallway feels very cool and I can hear a slight hissing sound coming from all sides...
+                    }
                 - (navigation, oxygen):
-                    Insert description of navigation/oxygen hallway... 
+                    {hallucination:
+                        - 3:
+                             I could go to oxygen or navigation. Maybe I should flip a coin to decide where to go. Uh oh, no coins on me so I’ll have to decide. The hissing is louder here.
+                        - 2:
+                            dur
+                        - 1:
+                            dur
+                        - else:
+                            This is the hallway between the oxygen supply and the main navigation hub. The hissing appears to be getting way louder in around here.
+
+                    }
                 - (navigation, bridge):
-                    Insert description of navigation/bridge hallway... 
+                    {hallucination:
+                        - 3:
+                            Bridge on this side. Navigation on that side. Man, that word is hard to say. The bridge is flashing red. Is that the party room where everyone is hiding? There’s that annoying hissing sound again.
+                        - 2:
+                            dur
+                        - 1:
+                            dur
+                        - else:
+                            This is the hallway between the bridge and the main navigation hub. There is a red light flashing from inside the bridge and a faint hissing sound coming from all sides.
+                    } 
                 - (navigation, engine):
-                    Insert description of navigation/engine hallway... 
+                    {hallucination:
+                        - 3:
+                            Engine is written over this door with a heat coming from it. They must be roasting marshmallows there, or I could go to the other door with nav- nAvIgAtIOn written above it.
+                        - 2:
+                            dur
+                        - 1:
+                            dur
+                        - else:
+                            This is the hallway between the engine room and the main navigation hub. There is a strong heat coming from the direction of the engine room. You can hear a faint hissing coming from the walls.
+                    } 
                 - (engine, armory):
-                    Insert description of engine/armory hallway... 
+                    {hallucination:
+                        - 3:
+                           Let’s see here. I could go back to that toasty room that is the engine room, or I could go to the armory where there is probably a lot of fun to be had. That hissing is getting on my nerves.
+                        - 2:
+                            dur
+                        - 1:
+                            dur
+                        - else:
+                            This is the hallway between the engine room and the armory. There is a strong heat coming from the direction of the engine room. You can hear a faint hissing coming from the walls.
+                    }
                 - (engine, quarters):
-                    Insert description of navigation/quarters hallway... 
+                    {hallucination:
+                        - 3:
+                            Do I want to return to that hot room, or do I want to go to the cool sounding sleeping quarters? Now that I think about it, I have never seen a quarter sleep. Will that hissing ever stop?
+                        - 2:
+                            dur
+                        - 1:
+                            dur
+                        - else:
+                            This is the hallway between the engine room and the sleeping quarters. There is a strong heat coming from the direction of the engine room. You can hear a faint hissing coming from the walls.
+                    } 
             }
         - medbay:
             {hallucination:
@@ -321,7 +433,8 @@ VAR Inventory = (notebook, tmp) // the detective's inventory initially begins wi
         - oxygen:
             {hallucination:
                 - 3:
-                    Things are bad.
+                    WWWWOOOOOOOOAAAAAAHHHHH!!! Look at all those tanks with O2 written on them. There is one with a singular blinking bar on it, but all the rest are out. I could probably make a good song matching the speed of the light flicker. That hissing sound would make a good background noise to that song. Should these things be like this?
+                    Over in the back is some enclosed green things that look like plants inside a device. What would all this do in an oxygen room? And it’s the thing that’s hissing? This probably is not good. Someone should probably do something about that.
                 - 2:
                     Things are worse.
                 - 1:
@@ -346,7 +459,9 @@ VAR Inventory = (notebook, tmp) // the detective's inventory initially begins wi
         - engine:
             {hallucination:
                 - 3:
-                    Things are bad.
+                    UGH! This room is blistering hot! Was this where they had their on board sauna? I don’t know why they would put it in a room called engines. That just doesn't seem smart.
+                    That big thing over there has a bunch of pipes going to it, and if I look out the window, there are weird pulses coming out from behind that big thing. On the other wall, there are taped out silhouettes where things are missing. Maybe it is a crime scene, but everything is too small for them to be anything from a human. It might have been that someone’s toys were taken from there.
+                    Those things up there that look like they open and shut are leaking some spooky, glow-in-the-dark fluid. I bet those missing toys could stop that.
                 - 2:
                     Things are worse.
                 - 1:
@@ -359,7 +474,8 @@ VAR Inventory = (notebook, tmp) // the detective's inventory initially begins wi
         - armory:
             {hallucination:
                 - 3:
-                    Things are bad.
+                    Are those laser tag weapons? No way! I bet they had so much fun with these. I wish I had someone to play laser tag with. I am curious if they ever played laser tag with any species not from Earth. I bet that would be super fun.
+                    It looks like everyone had their own weapons, armor, and everything. This must have been a fun ship to work on when everyone was around. Some of the wall chests are opened and even missing their things. They must have liked it so much they couldn’t stop playing laser tag even when they left. Someone even built a barricade so that they could win more easily. I bet that guy won the last game of laser tag.
                 - 2:
                     Things are worse.
                 - 1:
@@ -371,7 +487,8 @@ VAR Inventory = (notebook, tmp) // the detective's inventory initially begins wi
         - quarters:
             {hallucination:
                 - 3:
-                    Things are bad.
+                    Bunk beds as far as the walls go! This must have been where they had cool late night hangouts. EW, and there are desks too. That must mean they had homework, and they had containers that might have held all their homework. People must have been in a hurry because a lot of things have been dropped on the floor. There are a couple cool shirts, socks, and they even left behind some old pizza. Maybe I should look around to see if there is any leftover warm pizza.
+                    Oh, it looks like someone spilled some red jam on the corner of that table over there. I wonder what happened. I’m not sure if the jam was spilled on purpose or by accident. I hope the people eventually get their cool clothes back. It is a shame about the red jam though.
                 - 2:
                     Things are worse.
                 - 1:
@@ -396,7 +513,7 @@ VAR Inventory = (notebook, tmp) // the detective's inventory initially begins wi
     {hallucination < 0: 
         ~ hallucination = 0
     }
-    You have {hallucination} hallucination. // TODO: comment out later
+    //You have {hallucination} hallucination. // TODO: comment out later
 ->->
 
 
@@ -413,8 +530,15 @@ VAR Inventory = (notebook, tmp) // the detective's inventory initially begins wi
     
     Your last moments of feeling give you the vague notion you have fallen, but everything is so dark and you are so tired... what does it matter anyway?
 - -> game_over
-    
 
+== read_the_label_end ==
+    You do not have a lot of time, and you decide that this would be a good time to use this! Unfortunately, it's never good time to pump yourself full of Sulfur Dioxide.
+- -> game_over
+    
 == game_over ==
-    With that your journey has come to a horrible end.
+    You have met a horrible end.
+- -> END
+
+== you_did_it_end ==
+    Repairing the engine, you notice that the repetitive oxygen warning has ceased. It would seem that you have found and fixed the issue... or at least the most imminent one.
 - -> END
