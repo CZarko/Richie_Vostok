@@ -227,7 +227,7 @@ VAR Inventory = (notebook) // the detective's inventory initially begins with on
                 - else:
                     Some sort of religous book, but filled to the brim with the scribbles of some sort of lunatic.
             }
-            * {hallucination == 3} -> mechanos_end
+            * {hallucination == 3} [Embrace his will.] -> mechanos_end
         - blaster:
             {hallucination:
                 - 3:
@@ -464,24 +464,28 @@ VAR Inventory = (notebook) // the detective's inventory initially begins with on
             * {Inventory !? blaster} [Aquire some gear.] 
                 # CLEAR
                 They shouldn't have left it here, but I all the armor is too heavily used for me to play too... Though, there seems to be a laser gun here... PERFECT.
+                [Picked Up ~ Blaster]
                 -> pick_up(blaster, -> main)
         - 2:
             Somebody left some gear on the floor, that's not good. They should clean up after themselves better.
             * {Inventory !? blaster} [Check gear.] 
                 # CLEAR
                 Whatever happened must have been awesome, because this gear has been heavily used. Even better in the pile there seems to be a laser blaster... Finder's keepers.
+                [Picked Up ~ Blaster]
                 -> pick_up(blaster, -> main)
         - 1:
             There's a messy pile of armor on the ground.
             * {Inventory !? blaster} [Check pile.] 
                 # CLEAR
                 On closer inspection this looks to be a pile of armor that has been shot quite a bit, and under it a blaster seems to have been left. I'll take it.
+                [Picked Up ~ Blaster]
                 -> pick_up(blaster, -> main)
         - else:
             This isn't good. Some equipment from the armory seems to have been dropped here... a messy pile of... riddled armor? What is going on here?
             * {Inventory !? blaster} [Inspect the pile.] 
                 # CLEAR
                 Searching through the messy pile, doesn't help make heads or tails of what went down here, but I found a blaster. I'll take this just in case.
+                [Picked Up ~ Blaster]
                 -> pick_up(blaster, -> main)
     }
     + ->
@@ -753,7 +757,14 @@ VAR Inventory = (notebook) // the detective's inventory initially begins with on
     * {Inventory !? saw} [Take a saw.] 
         [Picked Up ~ Saw]
         -> pick_up(saw, -> main)
-    + ->
+    + -> 
+        There's nothing left for me to take. 
+        {Inventory !? valve_handle:
+            Or so I'd like to say.
+            Having removed all the tools, there is a valve handle towards the bottom of the chest. I wonder what use this could have.
+            [Picked Up ~ Valve Handle]
+            -> pick_up(valve_handle, -> main)
+        }
 - -> main
 
 == quarter_actions(-> ret) ==
@@ -763,7 +774,7 @@ VAR Inventory = (notebook) // the detective's inventory initially begins with on
                 # CLEAR
                 This jam does not taste good. Did someone poor metal into it???
                 -> ret
-            * [Take.] 
+            + [Take.] 
                 # CLEAR
                 -> sneak_a_peak
         - 2:
@@ -771,7 +782,7 @@ VAR Inventory = (notebook) // the detective's inventory initially begins with on
                 # CLEAR
                 I don't know what it is... it just is.
                 -> ret
-            * [Loot.] 
+            + [Loot.] 
                 # CLEAR
                 -> sneak_a_peak
         - 1:
@@ -779,7 +790,7 @@ VAR Inventory = (notebook) // the detective's inventory initially begins with on
                 # CLEAR
                 With a closer look, it appears that the reddish-brown stain is blood. Strange. I don't seem to have any cuts on me.
                 -> ret
-            * [Inspect the Boxes.] 
+            + [Inspect the Boxes.] 
                 # CLEAR
                 -> sneak_a_peak
         - else:
@@ -788,7 +799,7 @@ VAR Inventory = (notebook) // the detective's inventory initially begins with on
                 Even with a closer look, it is impossible to procure whether it was from a struggle or a mere workplace mishap from this amount of blood.
                 Yet, it remains unsettling.
                 -> ret
-            * [Inspect the Crew's Chests.] 
+            + [Inspect the Crew's Chests.] 
                 # CLEAR
                 -> sneak_a_peak
     }
