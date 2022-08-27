@@ -131,7 +131,9 @@ VAR Inventory = (notebook) // the detective's inventory initially begins with on
                 - else:
                     A notebook. This detective's best friend.
             }
-            * [Discard it?] -> use(notebook, -> main)
+            * [Discard it?] 
+                # CLEAR
+                -> use(notebook, -> main)
         - charred_tank:
             {hallucination:
                 - 3:
@@ -156,6 +158,7 @@ VAR Inventory = (notebook) // the detective's inventory initially begins with on
                     Although this gas tank is a tad dented, it seems to be in great shape. Even better, its label reads O2. Perhaps this will help.
             }
             * [Use it?]
+                # CLEAR
                 ~ oxygenRemaining += 10
                 -> use(dented_tank, -> main)
         - valve_handle:
@@ -285,12 +288,16 @@ VAR Inventory = (notebook) // the detective's inventory initially begins with on
         - else:
             Uh oh. One of the Developers of this game, has made a mistake and either not removed this temporary prop or forgotten to code a description for it.
     }
-    + [Save it for later.] I decided to hold onto it for the time being.
+    + [Save it for later.] 
+        # CLEAR
+        I decided to hold onto it for the time being.
 - ->->
 
 // Creates button for inspectuous
 == inspect_option(inv, -> ret)
-    + [The {LIST_MIN(inv)}.] -> inspect(LIST_MIN(inv)) -> main
+    + [The {LIST_MIN(inv)}.] 
+        # CLEAR
+        -> inspect(LIST_MIN(inv)) -> main
 - -> ret
 
 // Creates a menu with a button for every prop in the player's current Inventory
@@ -427,14 +434,14 @@ VAR Inventory = (notebook) // the detective's inventory initially begins with on
 == nav_bri_hallway_actions(-> ret) ==
     {hallucination:
         - 0:
-            {Inventory !? screwdriver} There's a screwdriver underneath a grate in the floor...
+            {Inventory !? screwdriver: There's a screwdriver underneath a grate in the floor...}
             * {Inventory ? crowbar} [Pry grate.]
                 # CLEAR
                 Using the crowbar, I am able to pry the grate to get to the screwdriver. It could be useful.
                 [Picked Up ~ Screwdriver]
                 -> pick_up(screwdriver, -> main)
         - else:
-            {Inventory !? screwdriver} Something is beneath the floors here...
+            {Inventory !? screwdriver: Something is beneath the floors here...}
             * {Inventory ? crowbar} [Check below.]
                 # CLEAR
                 Using the metal stick of prying, I am able to get beneath the floor.
@@ -785,6 +792,7 @@ VAR Inventory = (notebook) // the detective's inventory initially begins with on
                 # CLEAR
                 -> sneak_a_peak
     }
+    + ->
 - -> ret
 
 == action(-> ret) ==
@@ -820,7 +828,9 @@ VAR Inventory = (notebook) // the detective's inventory initially begins with on
             <- quarter_actions(ret)
     }
     + [Investigate elsewhere.] -> move(ret)
-    + [Check inventory.] -> check(ret)
+    + [Check inventory.] 
+        # CLEAR
+        -> check(ret)
 - -> ret
 
 // Depending on the current location and hallucination level of the player
